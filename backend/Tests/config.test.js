@@ -17,7 +17,9 @@ describe("configuration comes from env", () => {
         
         delete process.SECRET_KEY;
         delete process.env.PORT;
+        delete process.env.BCRYPT_WORK_FACTOR;
         delete process.env.DATABASE_URL;
+
         
         expect(config.getDatabaseUri()).toEqual("admin_db");
         process.env.NODE_ENV = "test";
