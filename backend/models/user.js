@@ -91,8 +91,8 @@ class User {
 
     return user;
   }
-
-  static async get(username) {
+/*** Get Username */
+  static async get(id) {
     const userResult = await db.query(
       `SELECT u.id,
               u.username,
@@ -104,8 +104,8 @@ class User {
        FROM users u
        LEFT JOIN user_roles ur ON u.id = ur.user_id
        LEFT JOIN roles r ON ur.role_id = r.id
-       WHERE username = $1`,
-      [username]
+       WHERE u.username = $1`,
+      [id]
     );
 
     const user = userResult.rows[0];
