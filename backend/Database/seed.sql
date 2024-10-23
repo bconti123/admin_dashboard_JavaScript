@@ -1,8 +1,8 @@
-INSERT INTO users (username, password, email) 
+INSERT INTO users (username, password, first_name, last_name, email) 
 VALUES
-('Root', 'rootpass', 'root@localhost.com'),
-('Admin', 'adminpass', 'admin@localhost.com'),
-('User', 'userpass', 'user@localhost.com');
+('Root', 'rootpass', 'root', 'user', 'root@localhost.com'),
+('Admin', 'adminpass', 'admin', 'user', 'admin@localhost.com'),
+('User', 'userpass', 'user', 'user', 'user@localhost.com');
 
 INSERT INTO roles (name, description) 
 VALUES
