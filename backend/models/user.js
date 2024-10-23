@@ -78,6 +78,7 @@ class User {
     );
 
     const user = result.rows[0];
+
     // User role will be default.
     const user_roles = await db.query(
       `INSERT INTO user_roles
@@ -91,7 +92,15 @@ class User {
 
     return user;
   }
-/*** Get Username */
+
+  /**
+   * Given a username, get the user data.
+   *
+   * Returns {id, username, firstName, lastName, email, role}
+   *
+   * Throws NotFoundError if user not found.
+   */
+
   static async get(id) {
     const userResult = await db.query(
       `SELECT u.id,
@@ -104,7 +113,7 @@ class User {
        FROM users u
        LEFT JOIN user_roles ur ON u.id = ur.user_id
        LEFT JOIN roles r ON ur.role_id = r.id
-       WHERE u.username = $1`,
+       WHERE u.id = $1`,
       [id]
     );
 
@@ -132,4 +141,25 @@ class User {
 
     return user;
   }
+
+  static async findAll() {
+    const result = await db.query(
+      `SELECT u.id,
+              u.username,
+              u.email,
+              u.first_name,
+              u.last_name,
+              r.name,
+              r.description
+      FROM users u
+      LEFT JOIN user_roles ur ON u.id = ur.user_id
+      LEFT JOIN roles r ON ur.role_id = r.id`
+    );
+
+    const user = result.rows[0];
+
+    return user;
+  }
 }
+
+module.exports = User;
