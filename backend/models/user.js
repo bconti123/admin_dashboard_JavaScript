@@ -160,6 +160,72 @@ class User {
 
     return user;
   }
+
+  /** Update user data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data does not contain
+   * all the fields; this only changes provided ones.
+   *
+   * Data can include:
+   *   { firstName, lastName, password, email }
+   *
+   * Returns {username, firstName, lastName, email, role}
+   *
+   * Throws NotFoundError if not found.
+   *
+   * Throws BadRequestError on duplicates.
+   */
+
+  static async update(id, data) {
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
+    }
+
+    const { setCols, values } = sqlForPartialUpdate(data, {
+      firstName: "first_name",
+      lastName: "last_name",
+      password: "password",
+      email: "email",
+    });
+
+    const result = await db.query(
+      `UPDATE users
+           SET ${setCols}
+           WHERE id = $1
+           RETURNING username, first_name AS "firstName", last_name AS "lastName", email, role`,
+      [...values, id]
+    );
+
+    const user = result.rows[0];
+
+    return user;
+  }
+
+  /** Delete given user from database; returns undefined. */
+  static async remove(id) {
+    let result = await db.query(
+      `DELETE
+           FROM users
+           WHERE id = $1
+           RETURNING username`,
+      [id]
+    );
+    const user = result.rows[0];
+
+    return user;
+  }
+
+  static async assignRole(user_id, role_id) {
+    const result = await db.query(
+      `INSERT INTO user_roles
+      (user_id, role_id)
+      VALUES ($1, $2)
+      RETURNING role_id`,
+      [user_id, role_id]
+    );
+
+    return result.rows[0];
+  }
 }
 
 module.exports = User;
