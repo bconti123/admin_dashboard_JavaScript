@@ -4,6 +4,11 @@ const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 
 class Role {
+
+  /** Get role.
+   * 
+   * Returns {id, name, description}
+   */
   static async get(id) {
     const result = await db.query(
       `SELECT id,
@@ -18,6 +23,11 @@ class Role {
 
     return role;
   }
+
+  /** Get all roles.
+   * 
+   * Returns [{id, name, description}]
+   */
   static async findAll() {
     const result = await db.query(
       `SELECT id,
@@ -29,6 +39,10 @@ class Role {
     return result.rows;
   }
 
+  /** Create new role.
+   * 
+   * Returns {id, name, description}
+   */
   static async create({ name, description }) {
     const duplicateCheck = await db.query(
       `SELECT name
@@ -53,6 +67,10 @@ class Role {
     return result.rows[0];
   }
 
+  /** Update role.
+   * 
+   * Returns {id, name, description}
+   */
   static async update(id, { name, description }) {
     const result = await db.query(
       `UPDATE roles
@@ -66,6 +84,10 @@ class Role {
     return result.rows[0];
   }
 
+  /** Delete role.
+   * 
+   * Returns {id}
+   */
   static async delete(id) {
     const checkRole = await db.query(
       `SELECT id
