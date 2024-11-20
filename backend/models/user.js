@@ -141,7 +141,10 @@ class User {
 
     return user;
   }
-
+  /** Get all users.
+   *
+   * Returns [{id, username, firstName, lastName, email, role}]
+   */
   static async findAll() {
     const result = await db.query(
       `SELECT u.id,
@@ -215,6 +218,7 @@ class User {
     return user;
   }
 
+  /** Assign role to user */
   static async assignRole(user_id, role_id) {
     const result = await db.query(
       `INSERT INTO user_roles
