@@ -22,12 +22,12 @@ class User {
   static async authenticate(username, password) {
     const result = await db.query(
       `SELECT username,
-                  password,
-                  first_name AS "firstName",
-                  last_name AS "lastName",
-                  email,
-           FROM users
-           WHERE username = $1`,
+              password,
+              first_name AS "firstName",
+              last_name AS "lastName",
+              email
+        FROM users
+        WHERE username = $1`,
       [username]
     );
 
