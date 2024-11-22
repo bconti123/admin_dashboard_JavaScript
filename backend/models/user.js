@@ -126,10 +126,10 @@ class User {
     const userResult = await db.query(
       `SELECT u.id,
               u.username,
-              u.first_name,
-              u.last_name,
+              u.first_name AS "firstName",
+              u.last_name AS "lastName",
               u.email,
-              r.name AS role_name,
+              r.name AS role,
               r.description AS role_description
        FROM users u
        LEFT JOIN user_roles ur ON u.id = ur.user_id
@@ -140,25 +140,7 @@ class User {
 
     const user = userResult.rows[0];
 
-    if (!user) throw new NotFoundError(`no user found: ${username}`);
-
-    // // Check Role ID
-    // const checkRoleId = await db.query(
-    //   `SELECT role_id
-    //    FROM user_roles
-    //    WHERE user_id = $1`,
-    //   [user.id]
-    // );
-    // // Get Role with name and description
-    // const role = await db.query(
-    //   `SELECT name,
-    //           description
-    //    WHERE role_id = $1`,
-    //   [checkRoleId.rows[0].role_id]
-    // );
-
-    // user.role_name = role.name;
-    // user.role_description = role.description;
+    if (!user) throw new NotFoundError(`No user found with id: ${id}`);
 
     return user;
   }
@@ -171,16 +153,16 @@ class User {
       `SELECT u.id,
               u.username,
               u.email,
-              u.first_name,
-              u.last_name,
-              r.name,
-              r.description
+              u.first_name AS "firstName",
+              u.last_name AS "lastName",
+              r.name AS role,
+              r.description AS role_description
       FROM users u
       LEFT JOIN user_roles ur ON u.id = ur.user_id
       LEFT JOIN roles r ON ur.role_id = r.id`
     );
 
-    const user = result.rows[0];
+    const user = result.rows;
 
     return user;
   }
@@ -208,25 +190,29 @@ class User {
     const { setCols, values } = sqlForPartialUpdate(data, {
       firstName: "first_name",
       lastName: "last_name",
-      password: "password",
-      email: "email",
     });
 
-    const result = await db.query(
-      `UPDATE users
-           SET ${setCols}
-           WHERE id = $1
-           RETURNING username, first_name AS "firstName", last_name AS "lastName", email, role`,
-      [...values, id]
-    );
+    const usernameVarIdx = "$" + (values.length + 1);
+
+    const querySql = `UPDATE users 
+                      SET ${setCols}
+                      WHERE id = ${usernameVarIdx}
+                      RETURNING id, 
+                                username, 
+                                first_name AS "firstName", 
+                                last_name AS "lastName", 
+                                email`;
+    const result = await db.query(querySql, [...values, id]);
 
     const user = result.rows[0];
+
+    if (!user) throw new NotFoundError(`No user found with id: ${id}`);
 
     return user;
   }
 
   /** Delete given user from database; returns undefined. */
-  static async remove(id) {
+  static async delete(id) {
     let result = await db.query(
       `DELETE
            FROM users
@@ -235,6 +221,8 @@ class User {
       [id]
     );
     const user = result.rows[0];
+
+    if (!user) throw new NotFoundError(`No user found with id: ${id}`);
 
     return user;
   }
