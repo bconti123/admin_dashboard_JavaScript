@@ -102,7 +102,7 @@ class User {
     }
 
     // User role will be default.
-    const user_roles = await db.query(
+    await db.query(
       `INSERT INTO user_roles (user_id, role_id)
       VALUES ($1, $2)
       RETURNING role_id`,
