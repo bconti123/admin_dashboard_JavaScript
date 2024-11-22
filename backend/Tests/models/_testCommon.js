@@ -26,7 +26,9 @@ const commonBeforeAll = async () => {
      VALUES 
         (1, 'root', 'Root role'),
         (2, 'admin', 'Admin role'),
-        (3, 'user', 'User role')
+        (3, 'user', 'User role'),
+        (4, 'guest', 'Guest role'),
+        (5, 'newRole', 'new role')
       ON CONFLICT (id) DO NOTHING`
   );
 
