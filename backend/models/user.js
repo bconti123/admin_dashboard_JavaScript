@@ -63,6 +63,17 @@ class User {
       throw new BadRequestError(`Duplicate username: ${username}`);
     }
 
+    const duplicateEmailCheck = await db.query(
+      `SELECT email
+           FROM users
+           WHERE email = $1`,
+      [email]
+    );
+
+    if (duplicateEmailCheck.rows[0]) {
+      throw new BadRequestError(`Duplicate email: ${email}`);
+    }
+
     const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
     const result = await db.query(
@@ -79,16 +90,26 @@ class User {
 
     const user = result.rows[0];
 
-    // User role will be default.
-    const user_roles = await db.query(
-      `INSERT INTO user_roles
-      (user_id, role_id)
-      VALUES ($1, $2)
-      RETURNING role_id`,
-      [user.id, 3]
+    const checkRole = await db.query(
+      `SELECT id, name
+           FROM roles
+           WHERE id = $1`,
+      [3]
     );
 
-    user.role = user_roles.rows[0];
+    if (!checkRole.rows[0]) {
+      throw new BadRequestError(`No role found`);
+    }
+
+    // User role will be default.
+    const user_roles = await db.query(
+      `INSERT INTO user_roles (user_id, role_id)
+      VALUES ($1, $2)
+      RETURNING role_id`,
+      [user.id, checkRole.rows[0].id]
+    );
+
+    user.role = checkRole.rows[0].name;
 
     return user;
   }
