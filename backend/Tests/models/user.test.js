@@ -119,6 +119,22 @@ describe("registration", () => {
       expect(err instanceof BadRequestError).toBeTruthy();
     }
   });
+
+  test("bad request with no default role", async () => {
+    await db.query("DELETE FROM roles WHERE id = 3");
+    try {
+      await User.register({
+        username: "NewUser",
+        password: "newpassword",
+        firstName: "new",
+        lastName: "user",
+        email: "new@localhost.com",
+      });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
 });
 
 // Find All
@@ -223,6 +239,15 @@ describe("update", () => {
     expect(found.rows[0].password).not.toBeNull();
     expect(found.rows[0].password.startsWith("$2b$")).toEqual(true);
     expect(found.rows[0].password).not.toEqual(checkPassword.rows[0].password);
+  });
+
+  test("not found", async () => {
+    try {
+      await User.update(0, UpdateData);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
   });
 });
 
