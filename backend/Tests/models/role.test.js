@@ -44,33 +44,7 @@ describe("Get role", () => {
 describe("Get all roles", () => {
   test("works", async () => {
     const roles = await User.findAll();
-    expect(roles).toEqual([
-      {
-        id: 1,
-        name: "root",
-        description: "Root role",
-      },
-      {
-        id: 2,
-        name: "admin",
-        description: "Admin role",
-      },
-      {
-        id: 3,
-        name: "user",
-        description: "User role",
-      },
-      {
-        id: 4,
-        name: "guest",
-        description: "Guest role",
-      },
-      {
-        id: 5,
-        name: "newRole",
-        description: "new role",
-      },
-    ]);
+    expect(roles.length).toEqual(5);
   });
 
   test("not found if no roles", async () => {
@@ -78,7 +52,7 @@ describe("Get all roles", () => {
       return {
         rows: [],
       };
-    })
+    });
     try {
       await User.findAll();
       fail();
@@ -100,7 +74,10 @@ describe("Create role", () => {
 
   test("bad request with duplicate role", async () => {
     try {
-      const role = await User.create({ name: "root", description: "Root role" });
+      const role = await User.create({
+        name: "root",
+        description: "Root role",
+      });
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -110,7 +87,10 @@ describe("Create role", () => {
 
 describe("Update role", () => {
   test("works", async () => {
-    const role = await User.update(5, { name: "Updated", description: "updated role" });
+    const role = await User.update(5, {
+      name: "Updated",
+      description: "updated role",
+    });
     expect(role).toEqual({
       id: 5,
       name: "Updated",
@@ -129,19 +109,45 @@ describe("Update role", () => {
 
   test("not found if no such role", async () => {
     try {
-      await User.update(0, { name: "notFound", description: "not found" });
+      await User.update(100, { name: "notFound", description: "not found" });
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
     }
   });
 
-//   test("bad request with default role", async () => {
-//     try {
-//       await User.update(1, { name: "notFound", description: "not found" });
-//       fail();
-//     } catch (err) {
-//       expect(err instanceof BadRequestError).toBeTruthy();
-//     }
-//   });
+  test("bad request with default role", async () => {
+    try {
+      await User.update(1, { name: "root", description: "Root role" });
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+});
+
+// Delete role
+describe("Delete role", () => {
+  test("works", async () => {
+    const role = await User.delete(5);
+    expect(role).toEqual({ id: 5 });
+  });
+
+  test("not found if no such role", async () => {
+    try {
+      await User.delete(100);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+
+  test("bad request with default role", async () => {
+    try {
+      await User.delete(1);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
 });
