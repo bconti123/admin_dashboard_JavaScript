@@ -90,13 +90,14 @@ class User {
 
     const user = result.rows[0];
 
+    // Check default role
     const checkRole = await db.query(
       `SELECT id, name
            FROM roles
            WHERE id = $1`,
       [3]
     );
-
+    // Throw error if no default role
     if (!checkRole.rows[0]) {
       throw new BadRequestError(`No role found`);
     }
