@@ -52,21 +52,15 @@ describe("authentication", () => {
   });
 
   test("unauthenticated if no user", async () => {
-    try {
-      await User.authenticate("BadUser", "password");
-      fail();
-    } catch (err) {
-      expect(err instanceof UnauthorizedError).toBeTruthy();
-    }
+    await expect(User.authenticate("BadUser", "password")).rejects.toThrow(
+      UnauthorizedError
+    );
   });
 
   test("unauthenticated if wrong password", async () => {
-    try {
-      await User.authenticate("User", "wrongPassword");
-      fail();
-    } catch (err) {
-      expect(err instanceof UnauthorizedError).toBeTruthy();
-    }
+    await expect(User.authenticate("User", "wrongPassword")).rejects.toThrow(
+      UnauthorizedError
+    );
   });
 });
 
@@ -91,49 +85,40 @@ describe("registration", () => {
   });
 
   test("bad request with dup username", async () => {
-    try {
-      await User.register({
+    await expect(
+      User.register({
         username: "User",
         password: "newpassword",
         firstName: "new",
         lastName: "user",
         email: "new@localhost.com",
-      });
-      fail();
-    } catch (err) {
-      expect(err instanceof BadRequestError).toBeTruthy();
-    }
+      })
+    ).rejects.toThrow(BadRequestError);
   });
 
   test("bad request with dup email", async () => {
-    try {
-      await User.register({
+    await expect(
+      User.register({
         username: "NewUser",
         password: "newpassword",
         firstName: "new",
         lastName: "user",
         email: "user@localhost.com",
-      });
-      fail();
-    } catch (err) {
-      expect(err instanceof BadRequestError).toBeTruthy();
-    }
+      })
+    ).rejects.toThrow(BadRequestError);
   });
 
   test("bad request with no default role", async () => {
     await db.query("DELETE FROM roles WHERE id = 3");
-    try {
-      await User.register({
+    await expect(
+      User.register({
         username: "NewUser",
         password: "newpassword",
         firstName: "new",
         lastName: "user",
         email: "new@localhost.com",
-      });
-      fail();
-    } catch (err) {
-      expect(err instanceof BadRequestError).toBeTruthy();
-    }
+      })
+    ).rejects.toThrow(BadRequestError);
   });
 });
 
@@ -189,12 +174,7 @@ describe("get username", () => {
   });
 
   test("not found", async () => {
-    try {
-      await User.get(0);
-      fail();
-    } catch (err) {
-      expect(err instanceof NotFoundError).toBeTruthy();
-    }
+    await expect(User.get(100)).rejects.toThrow(NotFoundError);
   });
 });
 
@@ -219,7 +199,6 @@ describe("update", () => {
   });
 
   test("works: SET Password", async () => {
-
     const checkPassword = await db.query(`SELECT * FROM users WHERE id = 1`);
     expect(checkPassword.rows.length).toEqual(1);
 
@@ -242,12 +221,7 @@ describe("update", () => {
   });
 
   test("not found", async () => {
-    try {
-      await User.update(0, UpdateData);
-      fail();
-    } catch (err) {
-      expect(err instanceof NotFoundError).toBeTruthy();
-    }
+    await expect(User.update(100, UpdateData)).rejects.toThrow(NotFoundError);
   });
 });
 
@@ -256,7 +230,7 @@ describe("delete", () => {
   test("works", async () => {
     const user = await User.delete(1);
     expect(user).toEqual({
-      username: "Root"
+      username: "Root",
     });
 
     const result = await db.query(`SELECT * FROM users WHERE id = 1`);
@@ -264,12 +238,7 @@ describe("delete", () => {
   });
 
   test("not found", async () => {
-    try {
-      await User.delete(0);
-      fail();
-    } catch (err) {
-      expect(err instanceof NotFoundError).toBeTruthy();
-    }
+    await expect(User.delete(100)).rejects.toThrow(NotFoundError);
   });
 });
 
