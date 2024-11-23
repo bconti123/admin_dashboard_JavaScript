@@ -76,6 +76,9 @@ class Role {
    * Returns {id, name, description}
    */
   static async update(id, { name, description }) {
+    if (id < 4) {
+      throw new BadRequestError(`Cannot update default role`);
+    }
 
     const duplicateCheck = await db.query(
       `SELECT name
@@ -85,7 +88,7 @@ class Role {
     );
     if (duplicateCheck.rows[0]) {
       throw new BadRequestError(`Duplicate role: ${name}`);
-    } 
+    }
 
     const result = await db.query(
       `UPDATE roles
