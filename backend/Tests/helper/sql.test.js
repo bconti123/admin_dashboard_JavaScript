@@ -1,4 +1,5 @@
 const { sqlForPartialUpdate } = require("../../helper/sql");
+const { BadRequestError } = require("../../expressError");
 
 describe("sqlForPartialUpdate", () => {
   test("works: 1 item", () => {
@@ -21,5 +22,10 @@ describe("sqlForPartialUpdate", () => {
       setCols: '"key1"=$1,"otherkey"=$2',
       values: ["value1", "value2"],
     });
+  });
+
+  test("Bad request with no data", () => {
+    expect(() => sqlForPartialUpdate({}, {})).toThrow(BadRequestError);
+    expect(() => sqlForPartialUpdate({}, {})).toThrow("Bad Request");
   });
 });
