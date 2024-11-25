@@ -21,4 +21,8 @@ app.use((err, req, res, next) => {
     });
 });
 
+app.get("/", (req, res) => {
+    return res.status(200).send("Server is running");
+});
+
 module.exports = app;
