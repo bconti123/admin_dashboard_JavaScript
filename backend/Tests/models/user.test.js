@@ -30,6 +30,7 @@ describe("authentication", () => {
       firstName: "root",
       lastName: "user",
       email: "root@localhost.com",
+      role: "root",
     });
   });
   test("admin works", async () => {
@@ -39,6 +40,7 @@ describe("authentication", () => {
       firstName: "admin",
       lastName: "user",
       email: "admin@localhost.com",
+      role: "admin",
     });
   });
   test("user works", async () => {
@@ -48,6 +50,7 @@ describe("authentication", () => {
       firstName: "user",
       lastName: "user",
       email: "user@localhost.com",
+      role: "user",
     });
   });
 
