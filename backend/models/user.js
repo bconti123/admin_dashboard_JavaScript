@@ -21,13 +21,16 @@ class User {
 
   static async authenticate(username, password) {
     const result = await db.query(
-      `SELECT username,
-              password,
-              first_name AS "firstName",
-              last_name AS "lastName",
-              email
-        FROM users
-        WHERE username = $1`,
+      `SELECT u.username,
+              u.password,
+              u.first_name AS "firstName",
+              u.last_name AS "lastName",
+              u.email,
+              r.name AS role
+        FROM users u
+        LEFT JOIN user_roles ur ON u.id = ur.user_id
+        LEFT JOIN roles r ON ur.role_id = r.id
+        WHERE u.username = $1`,
       [username]
     );
 
@@ -97,6 +100,7 @@ class User {
            WHERE id = $1`,
       [3]
     );
+
     // Throw error if no default role
     if (!checkRole.rows[0]) {
       throw new BadRequestError(`No role found`);
