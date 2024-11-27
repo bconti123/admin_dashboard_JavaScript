@@ -1,11 +1,18 @@
 "use strict";
 const express = require("express");
-
+const cors = require("cors");
 const { NotFoundError } = require("./expressError");
+
+// Routes
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
+
+// app.use Routes
+app.use("/auth", authRoutes);
 
 app.use((req, res, next) => {
     return next(new NotFoundError());
