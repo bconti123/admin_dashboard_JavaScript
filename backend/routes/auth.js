@@ -30,7 +30,7 @@ router.post("/token", async (req, res, next) => {
 
         const { username, password } = req.body;
         const user = await User.authenticate(username, password);
-        const token = createToken(user);
+        const token = createToken(user); 
         return res.json({ token });
     } catch (err) {
         return next(err);
@@ -48,11 +48,13 @@ router.post("/register", async (req, res, next) => {
         const validator = jsonschema.validate(req.body, userRegisterSchema);
         if (!validator.valid) {
             const errs = validator.errors.map(e => e.stack);
+            console.debug(errs);
             throw new BadRequestError(errs);
         }
 
-        const user = await User.register(...req.body);
+        const user = await User.register(req.body);
         const token = createToken(user);
+        console.debug(token);
         return res.status(201).json({ token });
     } catch (err) {
         return next(err);
