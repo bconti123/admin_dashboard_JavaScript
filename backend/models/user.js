@@ -134,6 +134,7 @@ class User {
               u.first_name AS "firstName",
               u.last_name AS "lastName",
               u.email,
+              ur.role_id,
               r.name AS role,
               r.description AS role_description
        FROM users u
