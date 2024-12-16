@@ -171,6 +171,7 @@ describe("get username", () => {
       firstName: "root",
       lastName: "user",
       email: "root@localhost.com",
+      role_id: 1,
       role: "root",
       role_description: "Root role",
     });
