@@ -48,13 +48,13 @@ router.post("/register", async (req, res, next) => {
         const validator = jsonschema.validate(req.body, userRegisterSchema);
         if (!validator.valid) {
             const errs = validator.errors.map(e => e.stack);
-            console.debug(errs);
+            // console.debug("Auth Route Errors: ", errs);
             throw new BadRequestError(errs);
         }
 
         const user = await User.register(req.body);
         const token = createToken(user);
-        console.debug(token);
+        // console.debug("Auth Route Token: ", token);
         return res.status(201).json({ token });
     } catch (err) {
         return next(err);
