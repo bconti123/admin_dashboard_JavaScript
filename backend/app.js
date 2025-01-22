@@ -5,7 +5,7 @@ const { NotFoundError } = require("./expressError");
 
 // Routes
 const authRoutes = require("./routes/auth");
-const usersRoutes = require("./routes/users");
+const usersRoutes = require("./routes/user");
 
 const app = express();
 
