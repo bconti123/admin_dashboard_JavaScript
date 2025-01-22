@@ -5,6 +5,7 @@ const { NotFoundError } = require("./expressError");
 
 // Routes
 const authRoutes = require("./routes/auth");
+const usersRoutes = require("./routes/users");
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // app.use Routes
 app.use("/auth", authRoutes);
+app.use("/users", usersRoutes);
 
 // Health check
 app.get("/", (req, res) => {
